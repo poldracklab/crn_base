@@ -57,43 +57,4 @@ RUN curl -sSL http://neuro.debian.net/lists/vivid.de-m.full | tee /etc/apt/sourc
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-WORKDIR /root
-
-# Install miniconda
-RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && \
-    /bin/bash Miniconda-latest-Linux-x86_64.sh -b && \
-    rm Miniconda-latest-Linux-x86_64.sh
-ENV PATH /root/miniconda2/bin:$PATH
-
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
-
-# Create conda environment
-RUN conda create -y -n crnenv numpy \
-                              scipy \
-                              pandas \
-                              scikit-image \
-                              ipython \
-                              matplotlib \
-                              networkx \
-                              lxml && \
-    echo 'source activate crnenv' >> /root/.bashrc
-
-# Install pip
-RUN source activate crnenv && \
-    pip install --upgrade pip && \
-    pip install xvfbwrapper && \
-    pip install lockfile && \
-    pip install --upgrade numpy && \
-    pip install --upgrade pandas
-
-# Install nipype & mriqc
-RUN mkdir -p src && \
-    cd src && \
-    git clone https://github.com/nipy/nipype.git && \
-    source activate crnenv && \
-    cd nipype && \
-    pip install -e .
-
 CMD ["/bin/bash"]
