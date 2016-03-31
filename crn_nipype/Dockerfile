@@ -69,7 +69,11 @@ RUN apt-get update && \
                        libfreetype6-dev \
                        libpng12-dev \
                        libqhull-dev \
-                       libxft-dev
+                       libxft-dev \
+                       libjpeg-dev
+
+# Clear apt cache to reduce image size
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install pip
 RUN source activate crnenv && \
