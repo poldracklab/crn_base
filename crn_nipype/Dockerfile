@@ -44,15 +44,6 @@ ENV LANG C.UTF-8
 # Create conda environment
 RUN conda create -y -n crnenv lockfile && \
     echo 'source activate crnenv' >> /root/.bashrc
-# RUN conda create -y -n crnenv numpy \
-#                               scipy \
-#                               pandas \
-#                               scikit-image \
-#                               ipython \
-#                               matplotlib \
-#                               networkx \
-#                               lxml && \
-#     echo 'source activate crnenv' >> /root/.bashrc
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
@@ -78,6 +69,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Install pip
 RUN source activate crnenv && \
     pip install --upgrade pip && \
+    pip install nose && \
     pip install numpy && \
     pip install scipy && \
     pip install pandas && \
