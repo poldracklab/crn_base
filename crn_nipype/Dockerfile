@@ -46,7 +46,8 @@ RUN apt-get update && \
                        libpng12-dev \
                        libqhull-dev \
                        libxft-dev \
-                       libjpeg-dev
+                       libjpeg-dev \
+                       libyaml-dev
 
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -78,7 +79,8 @@ RUN source activate crnenv && \
     pip install scipy && \
     pip install pandas && \
     pip install matplotlib && \
-    pip install xvfbwrapper
+    pip install xvfbwrapper && \
+    python -c "from matplotlib import font_manager"
 
 # Install nipype & mriqc
 RUN mkdir -p src && \
@@ -86,6 +88,7 @@ RUN mkdir -p src && \
     git clone https://github.com/nipy/nipype.git && \
     source activate crnenv && \
     cd nipype && \
-    pip install -e .
+    pip install -r requirements.txt && \
+    python setup.py install
 
 CMD ["/bin/bash"]
