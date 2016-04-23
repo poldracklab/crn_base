@@ -73,6 +73,7 @@ RUN conda create -y -n crnenv lockfile
 # Install pip
 RUN source activate crnenv && \
     pip install --upgrade pip && \
+    pip install nose && \
     pip install numpy && \
     pip install scipy && \
     pip install pandas && \
