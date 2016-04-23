@@ -59,8 +59,7 @@ RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64
     /bin/bash Miniconda-latest-Linux-x86_64.sh -b -p /usr/local/miniconda2 && \
     rm Miniconda-latest-Linux-x86_64.sh && \
     echo '#!/bin/bash' >> /etc/profile.d/anaconda.sh && \
-    echo 'export PATH=/usr/local/miniconda2/bin:$PATH' >> /etc/profile.d/anaconda.sh && \
-    echo 'source activate crnenv' >> /etc/profile.d/anaconda.sh
+    echo 'export PATH=/usr/local/miniconda2/bin:$PATH' >> /etc/profile.d/anaconda.sh
 
 ENV PATH /usr/local/miniconda2/bin:$PATH
 
@@ -69,7 +68,9 @@ ENV PATH /usr/local/miniconda2/bin:$PATH
 ENV LANG C.UTF-8
 
 # Create conda environment
-RUN conda create -y -n crnenv lockfile
+RUN conda create -y -n crnenv lockfile && \
+    echo '#!/bin/bash' >> /etc/profile.d/crnenv.sh && \
+    echo 'source activate crnenv' >> /etc/profile.d/crnenv.sh
 
 # Install pip
 RUN source activate crnenv && \
