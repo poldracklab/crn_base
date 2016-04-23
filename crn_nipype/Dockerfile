@@ -29,31 +29,7 @@
 FROM oesteban/crn_base
 MAINTAINER Stanford Center for Reproducible Neuroscience <crn.poldracklab@gmail.com>
 
-WORKDIR /root
-
-# Install miniconda
-RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && \
-    /bin/bash Miniconda-latest-Linux-x86_64.sh -b && \
-    rm Miniconda-latest-Linux-x86_64.sh
-ENV PATH /root/miniconda2/bin:$PATH
-
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
-
-# Create conda environment
-RUN conda create -y -n crnenv lockfile && \
-    echo 'source activate crnenv' >> /root/.bashrc
-# RUN conda create -y -n crnenv numpy \
-#                               scipy \
-#                               pandas \
-#                               scikit-image \
-#                               ipython \
-#                               matplotlib \
-#                               networkx \
-#                               lxml && \
-#     echo 'source activate crnenv' >> /root/.bashrc
-
+# Install debian dependencies of python packages
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y gfortran \
@@ -74,6 +50,25 @@ RUN apt-get update && \
 
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR /root
+
+# Install miniconda
+RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && \
+    /bin/bash Miniconda-latest-Linux-x86_64.sh -b -p /usr/local/miniconda2 && \
+    rm Miniconda-latest-Linux-x86_64.sh && \
+    echo '#!/bin/bash' >> /etc/profile.d/anaconda.sh && \
+    echo 'export PATH=/usr/local/miniconda2/bin:$PATH' >> /etc/profile.d/anaconda.sh && \
+    echo 'source activate crnenv' >> /etc/profile.d/anaconda.sh
+
+ENV PATH /usr/local/miniconda2/bin:$PATH
+
+# http://bugs.python.org/issue19846
+# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
+ENV LANG C.UTF-8
+
+# Create conda environment
+RUN conda create -y -n crnenv lockfile
 
 # Install pip
 RUN source activate crnenv && \
