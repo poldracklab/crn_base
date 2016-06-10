@@ -29,7 +29,9 @@
 FROM ubuntu:vivid
 MAINTAINER Stanford Center for Reproducible Neuroscience <crn.poldracklab@gmail.com>
 
+# Preparations
 RUN ln -snf /bin/bash /bin/sh
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Update packages and install the minimal set of tools
 RUN apt-get update && \
