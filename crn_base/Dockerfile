@@ -41,8 +41,9 @@ RUN mkdir -p /opt/ants && \
     | tar -xjC /opt/ants --strip-components 1
 ENV ANTSPATH /opt/ants
 ENV PATH $ANTSPATH:$PATH
-RUN echo 'export ANTSPATH=/opt/ants' >> /root/.bashrc && \
-    echo 'export PATH=$ANTSPATH:$PATH' >> /root/.bashrc
+RUN echo '#!/bin/bash' > /etc/profile.d/crn_neuro.sh && \
+    echo 'export ANTSPATH=/opt/ants' >> /etc/profile.d/crn_neuro.sh && \
+    echo 'export PATH=$ANTSPATH:$PATH' >> /etc/profile.d/crn_neuro.sh
 
 
 # Enable neurodebian
@@ -51,8 +52,8 @@ RUN curl -sSL http://neuro.debian.net/lists/vivid.de-m.full | tee /etc/apt/sourc
     apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && \
     apt-get update && \
     apt-get install -y fsl-core afni && \
-    echo 'source /etc/fsl/fsl.sh' >> /root/.bashrc && \
-    echo 'source /etc/afni/afni.sh' >> /root/.bashrc
+    echo 'source /etc/fsl/fsl.sh' >> /etc/profile.d/crn_neuro.sh && \
+    echo 'source /etc/afni/afni.sh' >> /etc/profile.d/crn_neuro.sh
 
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
