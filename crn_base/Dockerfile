@@ -41,17 +41,17 @@ RUN mkdir -p /opt/ants && \
     | tar -xjC /opt/ants --strip-components 1
 ENV ANTSPATH /opt/ants
 ENV PATH $ANTSPATH:$PATH
-RUN echo '#!/bin/bash' > /etc/profile.d/crn_neuro.sh && \
-    echo 'export ANTSPATH=/opt/ants' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'export PATH=$ANTSPATH:$PATH' >> /etc/profile.d/crn_neuro.sh
-
 
 # Enable neurodebian
 RUN curl -sSL http://neuro.debian.net/lists/vivid.de-m.full | tee /etc/apt/sources.list.d/neurodebian.sources.list && \
     curl -sSL http://neuro.debian.net/lists/vivid.us-tn.full >> /etc/apt/sources.list.d/neurodebian.sources.list && \
     apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && \
     apt-get update && \
-    apt-get install -y fsl-core afni && \
+    apt-get install -y fsl-core afni
+
+RUN echo '#!/bin/bash' > /etc/profile.d/crn_neuro.sh && \
+    echo 'export ANTSPATH=/opt/ants' >> /etc/profile.d/crn_neuro.sh && \
+    echo 'export PATH=$ANTSPATH:$PATH' >> /etc/profile.d/crn_neuro.sh && \
     echo 'source /etc/fsl/fsl.sh' >> /etc/profile.d/crn_neuro.sh && \
     echo 'source /etc/afni/afni.sh' >> /etc/profile.d/crn_neuro.sh
 
