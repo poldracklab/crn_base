@@ -69,30 +69,19 @@ ENV PATH /usr/local/miniconda2/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-# Create conda environment
-RUN conda create -y -n crnenv lockfile && \
+# Create conda environment, use nipype's conda-forge channel
+RUN conda config --add channels conda-forge && \
+    conda create -y -n crnenv lockfile nipype && \
     echo '#!/bin/bash' >> /etc/profile.d/crnenv.sh && \
     echo 'source activate crnenv' >> /etc/profile.d/crnenv.sh
 
 # Install pip
 RUN source activate crnenv && \
     pip install --upgrade pip && \
-    pip install nose && \
-    pip install numpy && \
-    pip install scipy && \
-    pip install pandas && \
     pip install matplotlib && \
-    pip install xvfbwrapper && \
+    pip install psutil && \
+    pip install -e git+https://github.com/aquavitae/rst2pdf-py3-dev#egg=rst2pdf && \
     python -c "from matplotlib import font_manager"
-
-# Install nipype & mriqc
-RUN mkdir -p src && \
-    cd src && \
-    git clone https://github.com/nipy/nipype.git && \
-    source activate crnenv && \
-    cd nipype && \
-    pip install -r requirements.txt && \
-    python setup.py install
 
 RUN echo "source /etc/profile.d/crnenv.sh" >> /etc/bash.bashrc
 
