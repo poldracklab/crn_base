@@ -55,7 +55,8 @@ RUN echo '#!/bin/bash' > /etc/profile.d/crn_neuro.sh && \
     echo 'export ANTSPATH=/opt/ants' >> /etc/profile.d/crn_neuro.sh && \
     echo 'export PATH=$ANTSPATH:$PATH' >> /etc/profile.d/crn_neuro.sh && \
     echo 'source /etc/fsl/fsl.sh' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'source /etc/afni/afni.sh' >> /etc/profile.d/crn_neuro.sh
+    echo 'source /etc/afni/afni.sh' >> /etc/profile.d/crn_neuro.sh && \
+    echo 'source /etc/profile.d/crn_neuro.sh' >> /etc/bash.bashrc
 
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

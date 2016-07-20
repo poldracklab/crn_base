@@ -47,7 +47,9 @@ RUN apt-get update && \
                        libqhull-dev \
                        libxft-dev \
                        libjpeg-dev \
-                       libyaml-dev
+                       libyaml-dev \
+                       graphviz \
+                       pandoc
 
 # Clear apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -91,5 +93,7 @@ RUN mkdir -p src && \
     cd nipype && \
     pip install -r requirements.txt && \
     python setup.py install
+
+RUN echo "source /etc/profile.d/crnenv.sh" >> /etc/bash.bashrc
 
 CMD ["/bin/bash"]
