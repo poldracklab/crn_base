@@ -80,7 +80,6 @@ RUN source activate crnenv && \
     pip install --upgrade pip && \
     pip install matplotlib && \
     pip install psutil && \
-    pip install -e git+https://github.com/aquavitae/rst2pdf-py3-dev#egg=rst2pdf && \
     python -c "from matplotlib import font_manager"
 
 RUN echo "source /etc/profile.d/crnenv.sh" >> /etc/bash.bashrc
