@@ -31,11 +31,13 @@ MAINTAINER Stanford Center for Reproducible Neuroscience <crn.poldracklab@gmail.
 
 # Preparations
 RUN ln -snf /bin/bash /bin/sh
+ENV SHELL /bin/bash
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Update packages and install the minimal set of tools
 RUN apt-get update && \
-    apt-get install -y curl git xvfb bzip2 apt-utils
+    apt-get install -y curl git xvfb bzip2 apt-utils && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install ANTs
 RUN mkdir -p /opt/ants && \
@@ -44,21 +46,22 @@ RUN mkdir -p /opt/ants && \
 ENV ANTSPATH /opt/ants
 ENV PATH $ANTSPATH:$PATH
 
-# Enable neurodebian
+# Enable neurodebian // remove apt cache to clean up size of this layer
 RUN curl -sSL http://neuro.debian.net/lists/vivid.de-m.full | tee /etc/apt/sources.list.d/neurodebian.sources.list && \
     curl -sSL http://neuro.debian.net/lists/vivid.us-tn.full >> /etc/apt/sources.list.d/neurodebian.sources.list && \
     apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && \
     apt-get update && \
-    apt-get install -y fsl-core afni
+    apt-get install -y fsl-core afni && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN echo '#!/bin/bash' > /etc/profile.d/crn_neuro.sh && \
-    echo 'export ANTSPATH=/opt/ants' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'export PATH=$ANTSPATH:$PATH' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'source /etc/fsl/fsl.sh' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'source /etc/afni/afni.sh' >> /etc/profile.d/crn_neuro.sh && \
-    echo 'source /etc/profile.d/crn_neuro.sh' >> /etc/bash.bashrc
-
-# Clear apt cache to reduce image size
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Set FSL environment variables
+ENV FSLDIR=/usr/share/fsl/5.0 \
+    FSLOUTPUTTYPE=NIFTI_GZ \
+    FSLMULTIFILEQUIT=TRUE \
+    POSSUMDIR=/usr/share/fsl/5.0 \
+    FSLTCLSH=/usr/bin/tclsh \
+    FSLWISH=/usr/bin/wish \
+    PATH=/usr/lib/fsl/5.0:$PATH \
+    LD_LIBRARY_PATH=/usr/lib/fsl/5.0:$LD_LIBRARY_PATH
 
 CMD ["/bin/bash"]
