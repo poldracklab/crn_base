@@ -48,7 +48,8 @@ RUN sed -i -e 's,main$,main contrib non-free,g' /etc/apt/sources.list.d/neurodeb
                        libgomp1 \
                        perl-modules \
                        fsl-core \
-                       afni && \
+                       afni \
+                       graphviz && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set FSL environment variables

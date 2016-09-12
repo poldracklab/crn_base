@@ -39,9 +39,9 @@ RUN apt-get update && \
 WORKDIR /root
 
 # Install miniconda
-RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p /usr/local/miniconda && \
-    rm Miniconda3-latest-Linux-x86_64.sh
+RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh && \
+    /bin/bash Miniconda2-latest-Linux-x86_64.sh -b -p /usr/local/miniconda && \
+    rm Miniconda2-latest-Linux-x86_64.sh
 
 ENV PATH /usr/local/miniconda/bin:$PATH
 
