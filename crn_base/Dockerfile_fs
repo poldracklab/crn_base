@@ -64,7 +64,7 @@ ENV FSLDIR=/usr/share/fsl/5.0 \
 
 # Install ANTs
 RUN mkdir -p /opt/ants && \
-    curl -sSL "https://2a353b13e8d2d9ac21ce543b7064482f771ce658.googledrive.com/host/0BxI12kyv2olZVFhUcGVpYWF3R3c/ANTs-Linux_Ubuntu14.04.tar.bz2" \
+    curl -sSL "https://files.osf.io/v1/resources/fvuh8/providers/osfstorage/57f34767594d9001ef91bfb7" \
     | tar -xjC /opt/ants --strip-components 1
 ENV ANTSPATH /opt/ants
 ENV PATH $ANTSPATH:$PATH
@@ -95,6 +95,10 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     npm install -g bids-validator
 
+RUN mkdir -p /opt/c3d && \
+    curl -sSL "https://files.osf.io/v1/resources/fvuh8/providers/osfstorage/57f341d6594d9001f591bac2" \
+    | tar -xzC /opt/c3d --strip-components 1
+
 ENV OS=Linux \
     FS_OVERRIDE=0 \
     FIX_VERTEX_AREA= \
@@ -110,6 +114,8 @@ ENV OS=Linux \
     FMRI_ANALYSIS_DIR=/opt/freesurfer/fsfast \
     PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5 \
     MNI_PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5 \
-    PATH=/opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+    C3DPATH=/opt/c3d
+
+ENV PATH=$C3DPATH:$FREESURFER_HOME/bin:$FSFAST_HOME/bin:$FREESURFER_HOME/tktools:$MINC_BIN_DIR:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 CMD ["/bin/bash"]
