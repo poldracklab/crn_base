@@ -26,7 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-FROM ubuntu:vivid
+FROM neurodebian:latest
 MAINTAINER Stanford Center for Reproducible Neuroscience <crn.poldracklab@gmail.com>
 
 # Preparations
@@ -35,23 +35,21 @@ ENV SHELL /bin/bash
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Update packages and install the minimal set of tools
-RUN apt-get update && \
-    apt-get install -y curl git xvfb bzip2 apt-utils && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Install ANTs
-RUN mkdir -p /opt/ants && \
-    curl -sSL "https://2a353b13e8d2d9ac21ce543b7064482f771ce658.googledrive.com/host/0BxI12kyv2olZVFhUcGVpYWF3R3c/ANTs-Linux_Ubuntu14.04.tar.bz2" \
-    | tar -xjC /opt/ants --strip-components 1
-ENV ANTSPATH /opt/ants
-ENV PATH $ANTSPATH:$PATH
-
-# Enable neurodebian // remove apt cache to clean up size of this layer
-RUN curl -sSL http://neuro.debian.net/lists/vivid.de-m.full | tee /etc/apt/sources.list.d/neurodebian.sources.list && \
-    curl -sSL http://neuro.debian.net/lists/vivid.us-tn.full >> /etc/apt/sources.list.d/neurodebian.sources.list && \
-    apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && \
-    apt-get update && \
-    apt-get install -y fsl-core afni && \
+RUN sed -i -e 's,main$,main contrib non-free,g' /etc/apt/sources.list.d/neurodebian.sources.list && \
+    apt-get -y update && \
+    apt-get install -y curl \
+                       git \
+                       xvfb \
+                       bzip2 \
+                       apt-utils \
+                       tcsh \
+                       bc \
+                       tar \
+                       libgomp1 \
+                       perl-modules \
+                       fsl-core \
+                       afni \
+                       graphviz && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set FSL environment variables
@@ -63,5 +61,26 @@ ENV FSLDIR=/usr/share/fsl/5.0 \
     FSLWISH=/usr/bin/wish \
     PATH=/usr/lib/fsl/5.0:$PATH \
     LD_LIBRARY_PATH=/usr/lib/fsl/5.0:$LD_LIBRARY_PATH
+
+# Install ANTs
+RUN mkdir -p /opt/ants && \
+    curl -sSL "https://files.osf.io/v1/resources/fvuh8/providers/osfstorage/57f34767594d9001ef91bfb7" \
+    | tar -xjC /opt/ants --strip-components 1
+ENV ANTSPATH /opt/ants
+ENV PATH $ANTSPATH:$PATH
+
+# Install BIDS-validator
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    npm install -g bids-validator
+
+# Install C3D
+RUN mkdir -p /opt/c3d && \
+    curl -sSL "https://files.osf.io/v1/resources/fvuh8/providers/osfstorage/57f341d6594d9001f591bac2" \
+    | tar -xzC /opt/c3d --strip-components 1
+
+ENV C3DPATH=/opt/c3d
+ENV PATH=$C3DPATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 CMD ["/bin/bash"]
